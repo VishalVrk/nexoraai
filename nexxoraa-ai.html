@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nexxoraa AI | Custom AI Vision Systems for Precision Industrial Inspection</title>
+  <meta name="description" content="Nexxoraa AI delivers custom-built AI vision systems for precision industrial inspection. In AI vision since 2012. Trusted by Royal Enfield, Apollo Tyres, Saint-Gobain and more.">
+  <meta name="keywords" content="AI vision systems, machine vision inspection, industrial automation inspection, custom vision systems, defect detection, quality automation">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: '#DC2626',
+            'brand-dark': '#B91C1C',
+            dark: '#0A0B0F',
+            'dark-2': '#111827',
+            'dark-3': '#1E293B',
+          },
+          fontFamily: { sans: ['Inter', 'sans-serif'] }
+        }
+      }
+    }
+  </script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', sans-serif; color: #0F172A; background: #fff; }
+
+    /* ── SCAN ANIMATION (hero signature element) ── */
+    .scan-grid {
+      position: absolute; inset: 0; overflow: hidden;
+      background-image:
+        linear-gradient(rgba(220,38,38,.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(220,38,38,.05) 1px, transparent 1px);
+      background-size: 48px 48px;
+    }
+    .scan-line {
+      position: absolute; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent 0%, rgba(220,38,38,.6) 30%, rgba(220,38,38,1) 50%, rgba(220,38,38,.6) 70%, transparent 100%);
+      box-shadow: 0 0 12px rgba(220,38,38,.5);
+      animation: scan 4s linear infinite;
+    }
+    @keyframes scan { 0% { top: 0%; } 100% { top: 100%; } }
+    .corner { position: absolute; width: 20px; height: 20px; }
+    .corner-tl { top: 24px; left: 24px; border-top: 2px solid #DC2626; border-left: 2px solid #DC2626; }
+    .corner-tr { top: 24px; right: 24px; border-top: 2px solid #DC2626; border-right: 2px solid #DC2626; }
+    .corner-bl { bottom: 24px; left: 24px; border-bottom: 2px solid #DC2626; border-left: 2px solid #DC2626; }
+    .corner-br { bottom: 24px; right: 24px; border-bottom: 2px solid #DC2626; border-right: 2px solid #DC2626; }
+
+    /* ── HEADER ── */
+    #main-header {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+      transition: background .3s, box-shadow .3s;
+    }
+    #main-header.scrolled { background: #0A0B0F !important; box-shadow: 0 2px 20px rgba(0,0,0,.4); }
+
+    /* ── NAV LINK ── */
+    .nav-link {
+      font-size: .875rem; font-weight: 500; color: #CBD5E1;
+      letter-spacing: .02em; padding: .25rem 0;
+      border-bottom: 2px solid transparent; transition: color .2s, border-color .2s;
+    }
+    .nav-link:hover { color: #fff; border-bottom-color: #DC2626; }
+
+    /* ── SECTION LABELS ── */
+    .section-label {
+      display: inline-block; font-size: .7rem; font-weight: 700;
+      letter-spacing: .12em; text-transform: uppercase; color: #DC2626;
+      margin-bottom: .75rem;
+    }
+    .section-label-light { color: rgba(220,38,38,.8); }
+
+    /* ── CAPABILITY CARD ── */
+    .cap-card {
+      border: 1px solid #E2E8F0; border-radius: 4px; padding: 1.75rem;
+      transition: border-color .2s, transform .2s, box-shadow .2s;
+      background: #fff;
+    }
+    .cap-card:hover { border-color: #DC2626; transform: translateY(-3px); box-shadow: 0 8px 24px rgba(220,38,38,.08); }
+    .cap-icon {
+      width: 44px; height: 44px; border-radius: 3px; background: #FEF2F2;
+      display: flex; align-items: center; justify-content: center; margin-bottom: 1rem;
+    }
+
+    /* ── WHY CARD ── */
+    .why-card {
+      padding: 1.75rem; border-left: 3px solid #DC2626;
+      background: rgba(255,255,255,.04); border-radius: 0 4px 4px 0;
+    }
+
+    /* ── INDUSTRY TAG ── */
+    .ind-tag {
+      border: 1px solid rgba(255,255,255,.12); border-radius: 2px;
+      padding: .75rem 1.25rem; font-size: .875rem; color: #CBD5E1;
+      display: flex; align-items: center; gap: .625rem;
+      transition: border-color .2s, background .2s;
+    }
+    .ind-tag:hover { border-color: #DC2626; background: rgba(220,38,38,.06); color: #fff; }
+
+    /* ── CLIENT LOGO ── */
+    .client-logo {
+      background: #fff; border: 1px solid #E2E8F0; border-radius: 3px;
+      padding: 1rem 1.75rem; display: flex; align-items: center; justify-content: center;
+      min-width: 140px; height: 72px; font-weight: 700; font-size: .875rem;
+      color: #475569; letter-spacing: .04em; transition: border-color .2s, color .2s;
+      white-space: nowrap;
+    }
+    .client-logo:hover { border-color: #DC2626; color: #DC2626; }
+
+    /* ── FORM ── */
+    .form-field {
+      background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12);
+      border-radius: 3px; padding: .75rem 1rem; width: 100%;
+      color: #fff; font-size: .9rem; font-family: 'Inter', sans-serif;
+      transition: border-color .2s;
+    }
+    .form-field::placeholder { color: rgba(255,255,255,.35); }
+    .form-field:focus { outline: none; border-color: #DC2626; }
+
+    /* ── BUTTONS ── */
+    .btn-red {
+      background: #DC2626; color: #fff; font-weight: 600; font-size: .875rem;
+      letter-spacing: .03em; padding: .75rem 1.5rem; border-radius: 3px;
+      transition: background .2s, transform .15s; display: inline-flex;
+      align-items: center; gap: .5rem; white-space: nowrap; cursor: pointer; border: none;
+    }
+    .btn-red:hover { background: #B91C1C; transform: translateY(-1px); }
+    .btn-outline-white {
+      background: transparent; color: #fff; font-weight: 600; font-size: .875rem;
+      letter-spacing: .03em; padding: .75rem 1.5rem; border-radius: 3px;
+      border: 1.5px solid rgba(255,255,255,.35); transition: border-color .2s, background .2s;
+      display: inline-flex; align-items: center; gap: .5rem; white-space: nowrap; cursor: pointer;
+    }
+    .btn-outline-white:hover { border-color: #fff; background: rgba(255,255,255,.07); }
+
+    /* ── STATS ── */
+    .stat-item { text-align: center; padding: 1.5rem 1rem; }
+    .stat-num { font-size: 2.25rem; font-weight: 800; color: #DC2626; line-height: 1; margin-bottom: .25rem; }
+    .stat-label { font-size: .8rem; font-weight: 500; color: #64748B; text-transform: uppercase; letter-spacing: .06em; }
+
+    /* ── MOBILE STICKY ── */
+    #mobile-sticky {
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 999;
+      display: none; background: #0A0B0F; border-top: 1px solid rgba(255,255,255,.1);
+    }
+    @media (max-width: 768px) { #mobile-sticky { display: flex; } }
+
+    /* ── MOBILE MENU ── */
+    #mobile-menu { display: none; }
+    #mobile-menu.open { display: block; }
+
+    /* ── FOOTER ── */
+    .footer-link { color: #94A3B8; font-size: .85rem; transition: color .2s; display: block; margin-bottom: .5rem; }
+    .footer-link:hover { color: #fff; }
+
+    /* ── HERO BG ── */
+    .hero-bg {
+      background: #0A0B0F;
+      background-image: radial-gradient(ellipse 80% 50% at 50% -10%, rgba(220,38,38,.15), transparent);
+    }
+
+    /* ── SCROLL FADE ── */
+    .fade-in { opacity: 0; transform: translateY(20px); transition: opacity .6s ease, transform .6s ease; }
+    .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+    /* ── DIVIDER ── */
+    .red-divider { width: 40px; height: 3px; background: #DC2626; margin-bottom: 1.25rem; }
+
+    /* ── PROCESS STEP ── */
+    .process-step { display: flex; gap: 1.25rem; align-items: flex-start; }
+    .step-num {
+      min-width: 36px; height: 36px; border-radius: 50%; background: #DC2626;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .8rem; font-weight: 800; color: #fff; flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════
+     TOP UTILITY BAR
+══════════════════════════════════════════════════ -->
+<div class="bg-dark text-xs text-slate-400 py-2 px-4 hidden md:block">
+  <div class="max-w-7xl mx-auto flex items-center justify-between">
+    <span class="flex items-center gap-4">
+      <span class="flex items-center gap-1">
+        <svg class="w-3 h-3 text-brand" fill="currentColor" viewBox="0 0 20 20"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/></svg>
+        <a href="tel:+919100000000" class="hover:text-white transition-colors">+91 91000 00000</a>
+      </span>
+      <span class="flex items-center gap-1">
+        <svg class="w-3 h-3 text-brand" fill="currentColor" viewBox="0 0 20 20"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/></svg>
+        <a href="mailto:info@nexxoraa.ai" class="hover:text-white transition-colors">info@nexxoraa.ai</a>
+      </span>
+    </span>
+    <span class="flex items-center gap-4">
+      <span class="text-slate-500">|</span>
+      <a href="https://wa.me/919100000000" target="_blank" class="flex items-center gap-1 text-green-400 hover:text-green-300 transition-colors font-medium">
+        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        WhatsApp Us
+      </a>
+    </span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     STICKY HEADER
+══════════════════════════════════════════════════ -->
+<header id="main-header" class="bg-dark border-b border-white/[.07]">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6">
+    <div class="flex items-center justify-between h-16">
+
+      <!-- Logo -->
+      <a href="#home" class="flex-shrink-0">
+        <div role="img" aria-label="Nexxoraa AI" style="width:240px; height:48px; background: url('image.png') no-repeat center; background-size: 320px 160px;"></div>
+      </a>
+
+      <!-- Desktop Nav -->
+      <nav class="hidden lg:flex items-center gap-7">
+        <a href="#about" class="nav-link">About</a>
+        <a href="#vision-systems" class="nav-link">AI Vision Systems</a>
+        <a href="#industries" class="nav-link">Industries</a>
+        <a href="#customers" class="nav-link">Customers</a>
+        <a href="#contact" class="nav-link">Contact</a>
+      </nav>
+
+      <!-- Header CTAs -->
+      <div class="hidden lg:flex items-center gap-3">
+        <a href="tel:+919100000000" class="flex items-center gap-2 text-white text-sm font-medium hover:text-brand transition-colors">
+          <svg class="w-4 h-4 text-brand" fill="currentColor" viewBox="0 0 20 20"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/></svg>
+          +91 91000 00000
+        </a>
+        <a href="https://wa.me/919100000000" target="_blank" class="flex items-center gap-1.5 bg-green-600 hover:bg-green-500 text-white text-sm font-semibold px-3 py-2 rounded transition-colors">
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          WhatsApp
+        </a>
+        <a href="#contact" class="btn-red">Request Demo</a>
+      </div>
+
+      <!-- Mobile hamburger -->
+      <button id="menu-btn" class="lg:hidden text-white p-2" onclick="document.getElementById('mobile-menu').classList.toggle('open')">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile menu -->
+  <div id="mobile-menu" class="lg:hidden bg-dark-2 border-t border-white/10 px-4 pb-4">
+    <nav class="flex flex-col gap-1 mt-3">
+      <a href="#about" class="text-slate-300 hover:text-white py-2.5 border-b border-white/5 text-sm font-medium" onclick="document.getElementById('mobile-menu').classList.remove('open')">About Us</a>
+      <a href="#vision-systems" class="text-slate-300 hover:text-white py-2.5 border-b border-white/5 text-sm font-medium" onclick="document.getElementById('mobile-menu').classList.remove('open')">AI Vision Systems</a>
+      <a href="#industries" class="text-slate-300 hover:text-white py-2.5 border-b border-white/5 text-sm font-medium" onclick="document.getElementById('mobile-menu').classList.remove('open')">Industries</a>
+      <a href="#customers" class="text-slate-300 hover:text-white py-2.5 border-b border-white/5 text-sm font-medium" onclick="document.getElementById('mobile-menu').classList.remove('open')">Customers</a>
+      <a href="#contact" class="text-slate-300 hover:text-white py-2.5 text-sm font-medium" onclick="document.getElementById('mobile-menu').classList.remove('open')">Contact</a>
+    </nav>
+    <div class="flex gap-3 mt-4">
+      <a href="tel:+919100000000" class="btn-red flex-1 justify-center">
+        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/></svg>
+        Call Now
+      </a>
+      <a href="https://wa.me/919100000000" target="_blank" class="btn-outline-white flex-1 justify-center">WhatsApp</a>
+    </div>
+  </div>
+</header>
+
+
+<!-- ═══════════════════════════════════════════════
+     HERO SECTION
+══════════════════════════════════════════════════ -->
+<section id="home" class="hero-bg relative min-h-screen flex items-center" style="padding-top:80px;">
+  <!-- Scan grid background -->
+  <div class="scan-grid"></div>
+  <div class="scan-line"></div>
+  <!-- Corner markers (signature element) -->
+  <div class="corner corner-tl"></div>
+  <div class="corner corner-tr"></div>
+  <div class="corner corner-bl"></div>
+  <div class="corner corner-br"></div>
+
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 relative z-10 py-24">
+    <div class="max-w-3xl">
+      <span class="section-label section-label-light">AI Vision Systems · Est. 2012</span>
+      <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-tight tracking-tight mb-6">
+        Custom AI Vision Systems<br>
+        <span class="text-brand">for Precision Industrial</span><br>
+        Inspection
+      </h1>
+      <p class="text-lg text-slate-300 leading-relaxed mb-10 max-w-2xl">
+        Nexxoraa AI delivers precision-driven machine vision solutions tailored to your production ideas, inspection challenges, and quality goals. Built for real factories. Proven in industry.
+      </p>
+      <div class="flex flex-wrap gap-4 items-center">
+        <a href="#contact" class="btn-red text-base px-6 py-3.5">
+          Request a Demo
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+        </a>
+        <a href="https://wa.me/919100000000" target="_blank" class="btn-outline-white text-base px-6 py-3.5">
+          <svg class="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          WhatsApp Now
+        </a>
+        <a href="tel:+919100000000" class="text-slate-300 hover:text-white text-sm font-medium flex items-center gap-2 transition-colors">
+          <svg class="w-4 h-4 text-brand" fill="currentColor" viewBox="0 0 20 20"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/></svg>
+          Call Now
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════
+     TRUST / STATS BAR
+══════════════════════════════════════════════════ -->
+<section class="bg-white border-b border-slate-100">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6">
+    <div class="grid grid-cols-2 md:grid-cols-4 divide-x divide-y md:divide-y-0 divide-slate-100">
+      <div class="stat-item">
+        <div class="stat-num">12+</div>
+        <div class="stat-label">Years in AI Vision</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">100+</div>
+        <div class="stat-label">Deployments</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">99%+</div>
+        <div class="stat-label">Inspection Accuracy</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">6</div>
+        <div class="stat-label">Key Industries Served</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════
+     TRUST STRIP (secondary)
+══════════════════════════════════════════════════ -->
+<section class="bg-slate-50 py-5 border-b border-slate-100">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6">
+    <div class="flex flex-wrap items-center justify-center gap-8 md:gap-12 text-sm text-slate-500">
+      <div class="flex items-center gap-2">
+        <svg class="w-4 h-4 text-brand flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+        <span class="font-medium text-slate-700">In AI vision since 2012</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <svg class="w-4 h-4 text-brand flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+        <span class="font-medium text-slate-700">Precision-driven custom systems</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <svg class="w-4 h-4 text-brand flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+        <span class="font-medium text-slate-700">Built for your production line</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <svg class="w-4 h-4 text-brand flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+        <span class="font-medium text-slate-700">Trusted by leading manufacturers</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════
+     ABOUT SUMMARY
+══════════════════════════════════════════════════ -->
+<section id="about" class="py-20 bg-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6">
+    <div class="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+      <div class="fade-in">
+        <span class="section-label">About Nexxoraa AI</span>
+        <div class="red-divider"></div>
+        <h2 class="text-3xl sm:text-4xl font-bold text-slate-900 leading-snug mb-6">
+          An Industrial AI Vision Company Built for Real Factories
+        </h2>
+        <p class="text-slate-600 leading-relaxed mb-5">
+          Nexxoraa AI is an AI Vision System Company focused on delivering precision-driven inspection solutions for industry. Working in AI vision since 2012, we build custom vision systems based on each customer's ideas, process needs, and production challenges.
+        </p>
+        <p class="text-slate-600 leading-relaxed mb-8">
+          Unlike companies that offer only standard off-the-shelf solutions, Nexxoraa AI develops tailored machine vision systems for real industrial environments. The goal is to improve quality, reduce human error, increase consistency, and provide data-proven quality improvement once the system is installed in production.
+        </p>
+        <div class="flex flex-wrap gap-3">
+          <a href="#contact" class="btn-red">Talk to an Expert</a>
+          <a href="#vision-systems" class="btn-outline-white" style="color:#0F172A; border-color:#E2E8F0;">View Our Systems</a>
+        </div>
+      </div>
+
+      <div class="fade-in grid grid-cols-2 gap-4">
+        <div class="bg-slate-900 p-6 rounded-sm">
+          <div class="text-brand text-3xl font-extrabold mb-1">2012</div>
+          <div class="text-slate-300 text-sm font-medium">Year we started in AI Vision</div>
+        </div>
+        <div class="bg-red-600 p-6 rounded-sm">
+          <div class="text-white text-3xl font-extrabold mb-1">Custom</div>
+          <div class="text-red-100 text-sm font-medium">Every system built for your line</div>
+        </div>
+        <div class="bg-slate-100 p-6 rounded-sm">
+          <div class="text-slate-900 text-3xl font-extrabold mb-1">Data</div>
+          <div class="text-slate-600 text-sm font-medium">Proven quality improvement on install</div>
+        </div>
+        <div class="bg-slate-900 p-6 rounded-sm">
+          <div class="text-brand text-3xl font-extrabold mb-1">B2B</div>
+          <div class="text-slate-300 text-sm font-medium">Industrial partner, not a software vendor</div>
+        </div>
+        <div class="col-span-2 bg-slate-50 border border-slate-200 p-6 rounded-sm flex items-center gap-4">
+          <svg class="w-10 h-10 text-brand flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+          <div>
+            <div class="font-semibold text-slate-900 text-sm">Precision-first approach</div>
+            <div class="text-slate-500 text-sm mt-0.5">Every system designed around your specific quality challenge and production reality</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════
+     AI VISION CAPABILITIES
+══════════════════════════════════════════════════ -->
+<section id="vision-systems" class="py-20 bg-slate-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6">
+    <div class="text-center mb-14 fade-in">
+      <span class="section-label">What We Do</span>
+      <div class="red-divider mx-auto"></div>
+      <h2 class="text-3xl sm:text-4xl font-bold text-slate-900 mt-2 mb-4">AI Vision System Capabilities</h2>
+      <p class="text-slate-500 max-w-xl mx-auto text-base leading-relaxed">Nexxoraa AI vision systems are built to handle the full spectrum of industrial inspection challenges — from micro-defect detection to high-speed dimensional verification.</p>
+    </div>
+
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 fade-in">
+      <!-- Card 1 -->
+      <div class="cap-card">
+        <div class="cap-icon">
+          <svg class="w-5 h-5 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+        </div>
+        <h3 class="font-bold text-slate-900 mb-2">Defect Detection</h3>
+        <p class="text-slate-500 text-sm leading-relaxed">Detect surface cracks, chips, scratches, contamination, and dimensional anomalies at production speed with AI-driven precision.</p>
+      </div>
+      <!-- Card 2 -->
+      <div class="cap-card">
+        <div class="cap-icon">
+          <svg class="w-5 h-5 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        </div>
+        <h3 class="font-bold text-slate-900 mb-2">Presence / Absence Inspection</h3>
+        <p class="text-slate-500 text-sm leading-relaxed">Verify that every component, label, fastener, or part is present and correctly positioned before the product moves downstream.</p>
+      </div>
+      <!-- Card 3 -->
+      <div class="cap-card">
+        <div class="cap-icon">
+          <svg class="w-5 h-5 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"/></svg>
+        </div>
+        <h3 class="font-bold text-slate-900 mb-2">Surface Inspection</h3>
+        <p class="text-slate-500 text-sm leading-relaxed">Full-surface analysis to identify texture deviations, colour inconsistencies, coating failures, and microscopic surface defects.</p>
+      </div>
+      <!-- Card 4 -->
+      <div class="cap-card">
+        <div class="cap-icon">
+          <svg class="w-5 h-5 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+        </div>
+        <h3 class="font-bold text-slate-900 mb-2">Dimensional & Pattern Verification</h3>
+        <p class="text-slate-500 text-sm leading-relaxed">Sub-millimetre measurement of component dimensions, hole positions, thread profiles, and geometric tolerances at line speed.</p>
+      </div>
+      <!-- Card 5 -->
+      <div class="cap-card">
+        <div class="cap-icon">
+          <svg class="w-5 h-5 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+        </div>
+        <h3 class="font-bold text-slate-900 mb-2">Quality Validation</h3>
+        <p class="text-slate-500 text-sm leading-relaxed">End-to-end quality gate that generates real-time OK/NOK decisions, logs inspection data, and supports quality reporting.</p>
+      </div>
+      <!-- Card 6 -->
+      <div class="cap-card">
+        <div class="cap-icon">
+          <svg class="w-5 h-5 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+        </div>
+        <h3 class="font-bold text-slate-900 mb-2">Line Automation Support</h3>
+        <p class="text-slate-500 text-sm leading-relaxed">Seamless integration with your existing PLCs, conveyors, and rejection mechanisms for fully automated, hands-free quality control.</p>
+      </div>
+    </div>
+
+    <div class="text-center mt-10">
+      <a href="#contact" class="btn-red px-8 py-3.5">Discuss Your Inspection Requirement</a>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════
+     WHY NEXXORAA
+══════════════════════════════════════════════════ -->
+<section class="py-20 bg-dark-2">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6">
+    <div class="grid lg:grid-cols-2 gap-16 items-start">
+      <div class="fade-in">
+        <span class="section-label section-label-light">Why Choose Us</span>
+        <div class="red-divider"></div>
+        <h2 class="text-3xl sm:text-4xl font-bold text-white mt-2 mb-6 leading-snug">
+          What Makes Nexxoraa Different
+        </h2>
+        <p class="text-slate-400 leading-relaxed mb-10">
+          We don't offer catalogue products. Every Nexxoraa AI vision system begins with a conversation about your production challenge and ends with a working, data-proven solution on your line.
+        </p>
+        <a href="#contact" class="btn-red px-8 py-3.5">Book a Free Consultation</a>
+      </div>
+
+      <div class="flex flex-col gap-5 fade-in">
+        <div class="why-card">
+          <h3 class="text-white font-semibold mb-1.5">Custom system design as per your ideas</h3>
+          <p class="text-slate-400 text-sm leading-relaxed">Your production line is unique. We engineer the vision system from the ground up around your specific product, defect types, and throughput requirements.</p>
+        </div>
+        <div class="why-card">
+          <h3 class="text-white font-semibold mb-1.5">Industrial-grade precision</h3>
+          <p class="text-slate-400 text-sm leading-relaxed">Built for harsh factory conditions — heat, vibration, dust, variable lighting — with hardware and algorithms tuned for your environment.</p>
+        </div>
+        <div class="why-card">
+          <h3 class="text-white font-semibold mb-1.5">Data-proven quality improvement</h3>
+          <p class="text-slate-400 text-sm leading-relaxed">Every installation generates real inspection data. You see measurable quality improvement, defect reduction, and process insights from day one.</p>
+        </div>
+        <div class="why-card">
+          <h3 class="text-white font-semibold mb-1.5">Real production integration</h3>
+          <p class="text-slate-400 text-sm leading-relaxed">We integrate directly with your conveyors, PLCs, and rejection stations — not a standalone box that your team has to work around.</p>
+        </div>
+        <div class="why-card">
+          <h3 class="text-white font-semibold mb-1.5">Faster and more reliable than manual inspection</h3>
+          <p class="text-slate-400 text-sm leading-relaxed">AI inspection runs at line speed, every shift, without fatigue. Replace subjective human checks with consistent, objective machine decisions.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════
+     DEPLOYMENT PROCESS
+══════════════════════════════════════════════════ -->
+<section class="py-20 bg-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6">
+    <div class="text-center mb-14 fade-in">
+      <span class="section-label">How It Works</span>
+      <div class="red-divider mx-auto"></div>
+      <h2 class="text-3xl sm:text-4xl font-bold text-slate-900 mt-2 mb-4">From Requirement to Running System</h2>
+      <p class="text-slate-500 max-w-xl mx-auto text-base">A practical, structured process that takes you from initial discussion to a live, production-integrated AI vision system.</p>
+    </div>
+
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 fade-in">
+      <div class="text-center">
+        <div class="w-12 h-12 rounded-full bg-brand text-white font-black text-lg flex items-center justify-center mx-auto mb-4">1</div>
+        <h3 class="font-bold text-slate-900 mb-2">Consultation</h3>
+        <p class="text-slate-500 text-sm leading-relaxed">We understand your product, process, defect types, and production speed requirements.</p>
+      </div>
+      <div class="text-center">
+        <div class="w-12 h-12 rounded-full bg-brand text-white font-black text-lg flex items-center justify-center mx-auto mb-4">2</div>
+        <h3 class="font-bold text-slate-900 mb-2">System Design</h3>
+        <p class="text-slate-500 text-sm leading-relaxed">Camera selection, lighting, optics, and AI model design specific to your inspection challenge.</p>
+      </div>
+      <div class="text-center">
+        <div class="w-12 h-12 rounded-full bg-brand text-white font-black text-lg flex items-center justify-center mx-auto mb-4">3</div>
+        <h3 class="font-bold text-slate-900 mb-2">POC &amp; Validation</h3>
+        <p class="text-slate-500 text-sm leading-relaxed">Proof of concept on your actual products. You validate accuracy before full deployment begins.</p>
+      </div>
+      <div class="text-center">
+        <div class="w-12 h-12 rounded-full bg-brand text-white font-black text-lg flex items-center justify-center mx-auto mb-4">4</div>
+        <h3 class="font-bold text-slate-900 mb-2">Line Integration</h3>
+        <p class="text-slate-500 text-sm leading-relaxed">Full deployment with PLC integration, rejection automation, and real-time quality dashboards.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════
+     INDUSTRIES
+══════════════════════════════════════════════════ -->
+<section id="industries" class="py-20 bg-dark">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6">
+    <div class="text-center mb-14 fade-in">
+      <span class="section-label section-label-light">Industries We Serve</span>
+      <div class="red-divider mx-auto"></div>
+      <h2 class="text-3xl sm:text-4xl font-bold text-white mt-2 mb-4">Built for Manufacturing</h2>
+      <p class="text-slate-400 max-w-lg mx-auto text-base">Nexxoraa AI vision systems operate across the most demanding industrial environments in India.</p>
+    </div>
+
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 fade-in">
+      <div class="ind-tag justify-center flex-col text-center py-5">
+        <svg class="w-7 h-7 text-brand mb-2 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/></svg>
+        <span class="text-xs font-semibold tracking-wide uppercase">Automotive</span>
+      </div>
+      <div class="ind-tag justify-center flex-col text-center py-5">
+        <svg class="w-7 h-7 text-brand mb-2 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" stroke-width="1.5"/><circle cx="12" cy="12" r="3" stroke-width="1.5"/></svg>
+        <span class="text-xs font-semibold tracking-wide uppercase">Tyres</span>
+      </div>
+      <div class="ind-tag justify-center flex-col text-center py-5">
+        <svg class="w-7 h-7 text-brand mb-2 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+        <span class="text-xs font-semibold tracking-wide uppercase">Glass</span>
+      </div>
+      <div class="ind-tag justify-center flex-col text-center py-5">
+        <svg class="w-7 h-7 text-brand mb-2 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+        <span class="text-xs font-semibold tracking-wide uppercase">Components</span>
+      </div>
+      <div class="ind-tag justify-center flex-col text-center py-5">
+        <svg class="w-7 h-7 text-brand mb-2 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+        <span class="text-xs font-semibold tracking-wide uppercase">Assembly Lines</span>
+      </div>
+      <div class="ind-tag justify-center flex-col text-center py-5">
+        <svg class="w-7 h-7 text-brand mb-2 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+        <span class="text-xs font-semibold tracking-wide uppercase">QC Stations</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════
+     CUSTOMERS
+══════════════════════════════════════════════════ -->
+<section id="customers" class="py-20 bg-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6">
+    <div class="text-center mb-12 fade-in">
+      <span class="section-label">Trusted By</span>
+      <div class="red-divider mx-auto"></div>
+      <h2 class="text-3xl font-bold text-slate-900 mt-2 mb-3">Our Customers</h2>
+      <p class="text-slate-500 text-base max-w-md mx-auto">Nexxoraa AI vision systems are deployed with some of India's most demanding manufacturers.</p>
+    </div>
+
+    <div class="flex flex-wrap justify-center gap-4 fade-in mb-10">
+      <div class="client-logo">ROYAL ENFIELD</div>
+      <div class="client-logo">APOLLO TYRES</div>
+      <div class="client-logo">SAINT-GOBAIN</div>
+      <div class="client-logo">RANE</div>
+      <div class="client-logo">PRICOL</div>
+    </div>
+
+    <div class="bg-slate-50 border border-slate-100 rounded-sm p-8 max-w-2xl mx-auto text-center fade-in">
+      <svg class="w-8 h-8 text-brand mx-auto mb-4" fill="currentColor" viewBox="0 0 24 24"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/></svg>
+      <p class="text-slate-600 leading-relaxed text-base italic mb-4">"Nexxoraa's AI vision system replaced three manual inspection stations on our line. Defect escape rates dropped immediately and the data reporting alone justifies the investment."</p>
+      <div class="font-semibold text-slate-900 text-sm">Quality Head, Automotive OEM</div>
+      <div class="text-slate-400 text-xs mt-0.5">Production line deployment, India</div>
+    </div>
+
+    <p class="text-center text-xs text-slate-400 mt-6">* Company logos will be displayed upon approval of legal usage rights.</p>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════
+     LEAD FORM / CTA
+══════════════════════════════════════════════════ -->
+<section id="contact" class="py-20 bg-dark-2">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6">
+    <div class="grid lg:grid-cols-2 gap-12 lg:gap-20 items-start">
+
+      <!-- Left: contact info -->
+      <div class="fade-in">
+        <span class="section-label section-label-light">Get In Touch</span>
+        <div class="red-divider"></div>
+        <h2 class="text-3xl sm:text-4xl font-bold text-white mt-2 mb-5 leading-snug">
+          Discuss Your Inspection Requirement
+        </h2>
+        <p class="text-slate-400 leading-relaxed mb-8">
+          Tell us about your product, your quality challenge, and your production line. Our team will come back to you with a tailored approach and a realistic path to deployment.
+        </p>
+
+        <div class="flex flex-col gap-5 mb-8">
+          <a href="tel:+919100000000" class="flex items-center gap-4 group">
+            <div class="w-10 h-10 rounded bg-brand/20 flex items-center justify-center flex-shrink-0 group-hover:bg-brand transition-colors">
+              <svg class="w-5 h-5 text-brand group-hover:text-white transition-colors" fill="currentColor" viewBox="0 0 20 20"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/></svg>
+            </div>
+            <div>
+              <div class="text-xs text-slate-500 uppercase tracking-wide font-medium">Call Us</div>
+              <div class="text-white font-semibold">+91 91000 00000</div>
+            </div>
+          </a>
+          <a href="https://wa.me/919100000000" target="_blank" class="flex items-center gap-4 group">
+            <div class="w-10 h-10 rounded bg-green-900/40 flex items-center justify-center flex-shrink-0 group-hover:bg-green-600 transition-colors">
+              <svg class="w-5 h-5 text-green-400 group-hover:text-white transition-colors" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            </div>
+            <div>
+              <div class="text-xs text-slate-500 uppercase tracking-wide font-medium">WhatsApp</div>
+              <div class="text-white font-semibold">+91 91000 00000</div>
+            </div>
+          </a>
+          <div class="flex items-center gap-4">
+            <div class="w-10 h-10 rounded bg-brand/20 flex items-center justify-center flex-shrink-0">
+              <svg class="w-5 h-5 text-brand" fill="currentColor" viewBox="0 0 20 20"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/></svg>
+            </div>
+            <div>
+              <div class="text-xs text-slate-500 uppercase tracking-wide font-medium">Email</div>
+              <div class="text-white font-semibold">info@nexxoraa.ai</div>
+            </div>
+          </div>
+          <div class="flex items-start gap-4">
+            <div class="w-10 h-10 rounded bg-brand/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+              <svg class="w-5 h-5 text-brand" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/></svg>
+            </div>
+            <div>
+              <div class="text-xs text-slate-500 uppercase tracking-wide font-medium">Office</div>
+              <div class="text-white font-semibold leading-snug">[Official Address]<br><span class="text-slate-400 font-normal text-sm">India</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: form -->
+      <div class="bg-dark-3 rounded-sm p-8 fade-in">
+        <h3 class="text-white font-bold text-xl mb-6">Get a Free Consultation</h3>
+        <form onsubmit="handleSubmit(event)" class="flex flex-col gap-4">
+          <div class="grid sm:grid-cols-2 gap-4">
+            <div>
+              <label class="text-slate-400 text-xs font-medium uppercase tracking-wide block mb-1.5">Your Name *</label>
+              <input type="text" placeholder="Full name" required class="form-field">
+            </div>
+            <div>
+              <label class="text-slate-400 text-xs font-medium uppercase tracking-wide block mb-1.5">Company *</label>
+              <input type="text" placeholder="Company name" required class="form-field">
+            </div>
+          </div>
+          <div class="grid sm:grid-cols-2 gap-4">
+            <div>
+              <label class="text-slate-400 text-xs font-medium uppercase tracking-wide block mb-1.5">Phone *</label>
+              <input type="tel" placeholder="+91 XXXXX XXXXX" required class="form-field">
+            </div>
+            <div>
+              <label class="text-slate-400 text-xs font-medium uppercase tracking-wide block mb-1.5">Email *</label>
+              <input type="email" placeholder="you@company.com" required class="form-field">
+            </div>
+          </div>
+          <div>
+            <label class="text-slate-400 text-xs font-medium uppercase tracking-wide block mb-1.5">Industry</label>
+            <select class="form-field" style="cursor:pointer;">
+              <option value="" style="background:#1E293B;">Select your industry</option>
+              <option value="automotive" style="background:#1E293B;">Automotive</option>
+              <option value="tyres" style="background:#1E293B;">Tyres &amp; Rubber</option>
+              <option value="glass" style="background:#1E293B;">Glass</option>
+              <option value="components" style="background:#1E293B;">Metal / Components</option>
+              <option value="assembly" style="background:#1E293B;">Assembly Lines</option>
+              <option value="other" style="background:#1E293B;">Other Manufacturing</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-slate-400 text-xs font-medium uppercase tracking-wide block mb-1.5">Your Requirement</label>
+            <textarea placeholder="Describe your inspection challenge, product type, and production speed..." rows="4" class="form-field resize-none"></textarea>
+          </div>
+          <button type="submit" class="btn-red w-full justify-center py-4 text-base mt-1">
+            Submit Enquiry — We'll Call You Back
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+          </button>
+        </form>
+        <div id="form-success" class="hidden mt-4 bg-green-900/30 border border-green-700/40 rounded p-4 text-center">
+          <p class="text-green-300 font-medium">Thank you! Our team will contact you within 24 hours.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════
+     FOOTER
+══════════════════════════════════════════════════ -->
+<footer class="bg-dark border-t border-white/[.07]">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 py-14">
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-10">
+      <!-- Brand -->
+      <div>
+        <div role="img" aria-label="Nexxoraa AI" style="width:240px; height:48px; background: url('image.png') no-repeat center; background-size: 320px 160px; margin-bottom:1rem;"></div>
+        <p class="text-slate-400 text-sm leading-relaxed mb-5">Precision-driven custom AI Vision Systems for industrial inspection. In the AI vision business since 2012.</p>
+        <div class="flex gap-3">
+          <a href="https://wa.me/919100000000" target="_blank" class="w-9 h-9 rounded bg-white/10 flex items-center justify-center hover:bg-green-600 transition-colors">
+            <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          </a>
+          <a href="mailto:info@nexxoraa.ai" class="w-9 h-9 rounded bg-white/10 flex items-center justify-center hover:bg-brand transition-colors">
+            <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <!-- Quick links -->
+      <div>
+        <h4 class="text-white font-semibold text-sm uppercase tracking-wide mb-4">Quick Links</h4>
+        <a href="#about" class="footer-link">About Us</a>
+        <a href="#vision-systems" class="footer-link">AI Vision Systems</a>
+        <a href="#industries" class="footer-link">Industries</a>
+        <a href="#customers" class="footer-link">Customers</a>
+        <a href="#contact" class="footer-link">Contact Us</a>
+      </div>
+
+      <!-- Solutions -->
+      <div>
+        <h4 class="text-white font-semibold text-sm uppercase tracking-wide mb-4">Solutions</h4>
+        <a href="#vision-systems" class="footer-link">Defect Detection</a>
+        <a href="#vision-systems" class="footer-link">Presence / Absence</a>
+        <a href="#vision-systems" class="footer-link">Surface Inspection</a>
+        <a href="#vision-systems" class="footer-link">Dimensional Verification</a>
+        <a href="#vision-systems" class="footer-link">Line Automation</a>
+      </div>
+
+      <!-- Contact -->
+      <div>
+        <h4 class="text-white font-semibold text-sm uppercase tracking-wide mb-4">Contact</h4>
+        <div class="text-slate-400 text-sm mb-2">[Official Address]<br>India</div>
+        <a href="tel:+919100000000" class="footer-link flex items-center gap-2">
+          <svg class="w-3.5 h-3.5 text-brand" fill="currentColor" viewBox="0 0 20 20"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/></svg>
+          +91 91000 00000
+        </a>
+        <a href="https://wa.me/919100000000" target="_blank" class="footer-link flex items-center gap-2">
+          <svg class="w-3.5 h-3.5 text-green-400" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          WhatsApp
+        </a>
+        <a href="mailto:info@nexxoraa.ai" class="footer-link flex items-center gap-2">
+          <svg class="w-3.5 h-3.5 text-brand" fill="currentColor" viewBox="0 0 20 20"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/></svg>
+          info@nexxoraa.ai
+        </a>
+        <a href="mailto:info@nexxoraa.ai" class="footer-link flex items-center gap-2">
+          <svg class="w-3.5 h-3.5 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/></svg>
+          www.nexxoraa.ai
+        </a>
+      </div>
+    </div>
+  </div>
+  <!-- Bottom bar -->
+  <div class="border-t border-white/[.07] py-4">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row justify-between items-center gap-2 text-xs text-slate-600">
+      <span>&copy; 2024 Nexxoraa AI. All rights reserved.</span>
+      <span>AI Vision Systems · Machine Vision Inspection · Industrial Automation · India</span>
+    </div>
+  </div>
+</footer>
+
+
+<!-- ═══════════════════════════════════════════════
+     MOBILE STICKY BUTTONS
+══════════════════════════════════════════════════ -->
+<div id="mobile-sticky">
+  <a href="tel:+919100000000" class="flex-1 flex items-center justify-center gap-2 py-4 bg-brand text-white text-sm font-bold">
+    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/></svg>
+    Call Now
+  </a>
+  <a href="https://wa.me/919100000000" target="_blank" class="flex-1 flex items-center justify-center gap-2 py-4 bg-green-600 text-white text-sm font-bold">
+    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+    WhatsApp Now
+  </a>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════
+     JS
+══════════════════════════════════════════════════ -->
+<script>
+  // Sticky header on scroll
+  window.addEventListener('scroll', () => {
+    document.getElementById('main-header').classList.toggle('scrolled', window.scrollY > 40);
+  });
+
+  // Scroll fade-in
+  const faders = document.querySelectorAll('.fade-in');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+  }, { threshold: 0.12 });
+  faders.forEach(el => observer.observe(el));
+
+  // Form submit
+  function handleSubmit(e) {
+    e.preventDefault();
+    document.getElementById('form-success').classList.remove('hidden');
+    e.target.reset();
+    setTimeout(() => document.getElementById('form-success').classList.add('hidden'), 6000);
+  }
+
+  // Mobile bottom padding for sticky bar
+  if (window.innerWidth <= 768) {
+    document.body.style.paddingBottom = '64px';
+  }
+</script>
+
+</body>
+</html>
